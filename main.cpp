@@ -15,6 +15,7 @@ int main() {
         cout << "Cannot open the video file!" << endl;
         return -1;
     }
+    
 
     double fps = stream.get(CV_CAP_PROP_FPS);
     cout << "Frame per seconds: " << fps << endl;
