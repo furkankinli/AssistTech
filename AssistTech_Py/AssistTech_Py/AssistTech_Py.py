@@ -1,20 +1,21 @@
 import cv2
 import sys
+import ctypes
 
-if __name__ == '__main__' :
+if __name__ == '__main__':
 
     # Set up tracker.
     # Instead of MIL, you can also use
     # BOOSTING, KCF, TLD, MEDIANFLOW or GOTURN
-    
-    tracker = cv2.Tracker_create("MIL")
+
+    tracker = cv2.Tracker_create("KCF")
 
     # Read video
-    video = cv2.VideoCapture("videos/chaplin.mp4")
+    video = cv2.VideoCapture(0)
 
     # Exit if video not opened.
     if not video.isOpened():
-        print( "Could not open video")
+        print("Could not open video")
         sys.exit()
 
     # Read first frame.
@@ -22,7 +23,7 @@ if __name__ == '__main__' :
     if not ok:
         print('Cannot read video file')
         sys.exit()
-    
+
     # Define an initial bounding box
     bbox = (287, 23, 86, 320)
 
@@ -37,7 +38,7 @@ if __name__ == '__main__' :
         ok, frame = video.read()
         if not ok:
             break
-        
+
         # Update tracker
         ok, bbox = tracker.update(frame)
 
@@ -45,11 +46,11 @@ if __name__ == '__main__' :
         if ok:
             p1 = (int(bbox[0]), int(bbox[1]))
             p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
-            cv2.rectangle(frame, p1, p2, (0,0,255))
+            cv2.rectangle(frame, p1, p2, (0, 0, 255))
 
         # Display result
         cv2.imshow("Tracking", frame)
 
         # Exit if ESC pressed
         k = cv2.waitKey(1) & 0xff
-        if k == 27 : break
+        if k == 27: break
