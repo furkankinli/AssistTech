@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="Tracking"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\Desktop\;CMake Files\..\..\..\Desktop\opencv\;CMake Files\..\..\..\Desktop\opencv\build\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="cv">
+				<Option output="C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/cv.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir=""/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/build"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/include/opencv"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/core/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudaarithm/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/flann/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/imgproc/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/ml/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/video/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudabgsegm/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudafilters/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudaimgproc/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudawarping/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/imgcodecs/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/photo/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/shape/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/videoio/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudacodec/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudaoptflow/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/highgui/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/objdetect/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/superres/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudaobjdetect/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/features2d/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/calib3d/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudafeatures2d/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudastereo/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/stitching/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/videostab/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/world/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/ts/include"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/include/c++"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/include/c++/mingw32"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/include/c++/backward"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/include"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/../../../../include"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/include-fixed"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/../../../../mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 cv"/>
+					<CompileFile command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="cv/fast">
+				<Option output="C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/cv.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir=""/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/build"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/include/opencv"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/core/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudaarithm/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/flann/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/imgproc/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/ml/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/video/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudabgsegm/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudafilters/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudaimgproc/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudawarping/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/imgcodecs/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/photo/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/shape/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/videoio/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudacodec/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudaoptflow/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/highgui/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/objdetect/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/superres/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudaobjdetect/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/features2d/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/calib3d/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudafeatures2d/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/cudastereo/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/stitching/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/videostab/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/world/include"/>
+					<Add directory="C:/Users/Furkan/Desktop/opencv/modules/ts/include"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/include/c++"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/include/c++/mingw32"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/include/c++/backward"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/include"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/../../../../include"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/include-fixed"/>
+					<Add directory="c:\mingw\bin\../lib/gcc/mingw32/5.3.0/../../../../mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 cv/fast"/>
+					<CompileFile command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/MinGW/bin/mingw32-make.exe -f &quot;C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="C:/Users/Furkan/CLionProjects/Tracking/AssistTech/main.cpp">
+			<Option target="cv"/>
+		</Unit>
+		<Unit filename="C:/Users/Furkan/CLionProjects/Tracking/AssistTech/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="C:/Users/Furkan/CLionProjects/Tracking/AssistTech/../../../Desktop/opencv/build/OpenCVConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\Desktop\opencv\build\"/>
+		</Unit>
+		<Unit filename="C:/Users/Furkan/CLionProjects/Tracking/AssistTech/../../../Desktop/opencv/build/OpenCVModules.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\Desktop\opencv\build\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

@@ -11,7 +11,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(cv main.cpp)
 
 # add libs you need
-set(OpenCV_LIBS opencv_core opencv_imgproc opencv_highgui opencv_imgcodecs) 
+set(OpenCV_LIBS opencv_core opencv_imgproc opencv_highgui opencv_imgcodecs)
 
 # linking
 target_link_libraries(cv ${OpenCV_LIBS})

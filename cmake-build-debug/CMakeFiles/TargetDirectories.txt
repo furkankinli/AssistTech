@@ -1,0 +1,3 @@
+C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/CMakeFiles/cv.dir
+C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Furkan/CLionProjects/Tracking/AssistTech/cmake-build-debug/CMakeFiles/rebuild_cache.dir
