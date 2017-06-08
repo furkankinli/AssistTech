@@ -20,12 +20,9 @@ def main():
         print('Cannot read video file')
         sys.exit()
 
-    bbox = (320, 240, 100, 100)
-
     # Uncomment the line below to select a different bounding box
     # bbox = cv2.selectROI(frame, False)
 
-    ok = tracker.init(frame, bbox)
     is_first_frame = True
 
     while True:
@@ -38,21 +35,21 @@ def main():
             foreground_mask = mog2_bgs.apply(gaussian_blurred)
             _, thresholded = cv2.threshold(foreground_mask, float(70.0), 255, cv2.THRESH_BINARY)
             gradient = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, element)
-            dilated = cv2.dilate(gradient, kernel=np.ones((5, 5), np.uint8), iterations=1)
-            eroded = cv2.erode(dilated, kernel=np.ones((5, 5), np.uint8), iterations=1)
-            foreground = eroded
+            foreground = gradient
 
             image, contours, hierarchy = cv2.findContours(foreground.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
             for i, cnt in enumerate(contours):
                 area = cv2.contourArea(cnt)
                 tmp_size = np.size(frame)
-                if not (area < 500 or area > tmp_size / 8):
+                if not ((1000 < area < 3000) or area > tmp_size / 8): # çözülmesi gerekiyor
                     if largest_area < area:
                         x, y, w, h = cv2.boundingRect(cnt)
-                        largest_area = area
-                        bbox = (x, y, w, h) # Could not update bbox.
-                        is_first_frame = False
+                        if w > 50 and h > 50: # çözülmesi gerekiyor
+                            bbox = (x, y, w, w)
+                            largest_area = area
+                            ok = tracker.init(frame, bbox)
+                            is_first_frame = False
         else:
             ok, bbox = tracker.update(frame)
 
