@@ -24,14 +24,15 @@ def main():
     # bbox = cv2.selectROI(frame, False)
 
     is_first_frame = True
-
+    previous_x = 0
+    previous_y = 0
     while True:
         ok, frame = video.read()
         if not ok: break
 
         if is_first_frame:
             largest_area = 0
-            gaussian_blurred = cv2.GaussianBlur(frame, (7, 7), 0) # Kernel size değişebilir noise robust için
+            gaussian_blurred = cv2.GaussianBlur(frame, (5, 5), 0) # Kernel size değişebilir noise robust için
             foreground_mask = mog2_bgs.apply(gaussian_blurred)
             _, thresholded = cv2.threshold(foreground_mask, float(70.0), 255, cv2.THRESH_BINARY)
             gradient = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, element)  #sadece dilation a çevrilebilir
@@ -45,8 +46,10 @@ def main():
                 if not ((1000 < area < 3000) or area > tmp_size / 8): # area aralığı çözülmesi gerekiyor
                     if largest_area < area:
                         x, y, w, h = cv2.boundingRect(cnt)
-                        if w > 50 and h > 50: # kare bulmamız ve belli bir uzunluktan fazla olması çözülmesi gerekiyor
+                        if w > 100 and h > 100: # kare bulmamız ve belli bir uzunluktan fazla olması çözülmesi gerekiyor
                             bbox = (x, y, w, w)
+                            previous_y = y
+                            previous_x = x
                             largest_area = area
                             ok = tracker.init(frame, bbox)
                             is_first_frame = False
@@ -57,11 +60,17 @@ def main():
                 p1 = (int(bbox[0]), int(bbox[1]))
                 p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
                 cv2.rectangle(frame, p1, p2, (0, 0, 255))
+                if (previous_x != bbox[0]) and (previous_y != bbox[1]): # direkt eşit mi? yoksa bir aralığa göre mi??
+                    previous_x = bbox[0]
+                    previous_y = bbox[1]
+                else:
+                    is_first_frame = True
 
         cv2.imshow("Tracking", frame)
 
         k = cv2.waitKey(1) & 0xff
-        if k == 27: break
+        if k == 27:
+            break
 
 
 if __name__ == '__main__':
