@@ -1,3 +1,5 @@
+from email.header import _Accumulator
+
 import cv2
 import sys
 import ctypes
@@ -20,9 +22,6 @@ def main():
         print('Cannot read video file')
         sys.exit()
 
-    # Uncomment the line below to select a different bounding box
-    # bbox = cv2.selectROI(frame, False)
-
     is_first_frame = True
     previous_x = 0
     previous_y = 0
@@ -35,7 +34,7 @@ def main():
             gaussian_blurred = cv2.GaussianBlur(frame, (5, 5), 0) # Kernel size değişebilir noise robust için
             foreground_mask = mog2_bgs.apply(gaussian_blurred)
             _, thresholded = cv2.threshold(foreground_mask, float(70.0), 255, cv2.THRESH_BINARY)
-            gradient = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, element)  #sadece dilation a çevrilebilir
+            gradient = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, element)  # sadece dilation a çevrilebilir
             foreground = gradient
 
             image, contours, hierarchy = cv2.findContours(foreground.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -43,16 +42,17 @@ def main():
             for i, cnt in enumerate(contours):
                 area = cv2.contourArea(cnt)
                 tmp_size = np.size(frame)
-                if not ((500 < area < 3000) or area > tmp_size / 8): # area aralığı çözülmesi gerekiyor
+                if not ((500 < area < 1000) or area > tmp_size / 16):  # area aralığı???? çözülmesi gerekiyor
                     if largest_area < area:
                         x, y, w, h = cv2.boundingRect(cnt)
-                        if w > 100 and h > 100: # kare bulmamız ve belli bir uzunluktan fazla olması çözülmesi gerekiyor
-                            bbox = (x, y, w, w)
-                            previous_y = y
-                            previous_x = x
-                            largest_area = area
-                            ok = tracker.init(frame, bbox)
-                            is_first_frame = False
+                        if x > 100 and y > 100 and \
+                                x + 100 < video.get(cv2.CAP_PROP_FRAME_WIDTH) and y + 100 < video.get(cv2.CAP_PROP_FRAME_HEIGHT):
+                            # ekranın belli ???miktar içinde bulması gerek hareketin
+                            if w > 100 and h > 100:  # kare bulmamız ve belli bir uzunluktan??? fazla olması çözülmesi gerekiyor
+                                bbox = (x, y, w, w)
+                                _ = tracker.init(frame, bbox)
+                                largest_area = area
+                                is_first_frame = False
         else:
             ok, bbox = tracker.update(frame)
 
@@ -60,15 +60,17 @@ def main():
                 p1 = (int(bbox[0]), int(bbox[1]))
                 p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
                 cv2.rectangle(frame, p1, p2, (0, 0, 255))
-                if (previous_x - 3 < bbox[0] < previous_x + 3) and (previous_y - 3 < bbox[1] < previous_y + 3): # direkt eşit mi? yoksa bir aralığa göre mi??
+                print("%s" % str(bbox))
+                if (previous_x - 3 < bbox[0] < previous_x + 3) and (previous_y - 3 < bbox[1] < previous_y + 3):
+                    # direkt eşit mi? yoksa bir 3?????!! aralığa göre mi??
                     is_first_frame = True
                 else:
                     previous_x = bbox[0]
                     previous_y = bbox[1]
-
-                if bbox[0] + bbox[2]/2 < 0 or video.get(cv2.CAP_PROP_FRAME_WIDTH) < (bbox[0] + bbox[2]/2) or bbox[1] + bbox[3]/2 < 0 \
-                                        or video.get(cv2.CAP_PROP_FRAME_HEIGHT) < (bbox[1] + bbox[3]/2):
-                    is_first_frame = True
+            else: is_first_frame = True
+            # if bbox[0] + bbox[2]/2 < 0 or video.get(cv2.CAP_PROP_FRAME_WIDTH) < (bbox[0] + bbox[2]/2) or bbox[1] + bbox[3]/2 < 0 \
+                   #     or video.get(cv2.CAP_PROP_FRAME_HEIGHT) < (bbox[1] + bbox[3]/2):
+                    # is_first_frame = True
 
         cv2.imshow("Tracking", frame)
 
