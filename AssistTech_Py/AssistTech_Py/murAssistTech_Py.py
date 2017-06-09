@@ -8,7 +8,6 @@ def main():
     element = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     mog2_bgs = cv2.createBackgroundSubtractorMOG2()
     cv2.ocl.setUseOpenCL(False)
-    tracker = cv2.Tracker_create("KCF")
     video = cv2.VideoCapture(0)
 
     if not video.isOpened():
@@ -54,6 +53,7 @@ def main():
                             ok = tracker.init(frame, bbox)
                             is_first_frame = False
         else:
+            tracker = cv2.Tracker_create("KCF")
             ok, bbox = tracker.update(frame)
 
             if ok:
