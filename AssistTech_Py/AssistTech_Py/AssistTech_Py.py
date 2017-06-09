@@ -43,7 +43,7 @@ def main():
             for i, cnt in enumerate(contours):
                 area = cv2.contourArea(cnt)
                 tmp_size = np.size(frame)
-                if not ((1000 < area < 3000) or area > tmp_size / 8): # area aralığı çözülmesi gerekiyor
+                if not ((500 < area < 3000) or area > tmp_size / 8): # area aralığı çözülmesi gerekiyor
                     if largest_area < area:
                         x, y, w, h = cv2.boundingRect(cnt)
                         if w > 100 and h > 100: # kare bulmamız ve belli bir uzunluktan fazla olması çözülmesi gerekiyor
@@ -60,11 +60,16 @@ def main():
                 p1 = (int(bbox[0]), int(bbox[1]))
                 p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
                 cv2.rectangle(frame, p1, p2, (0, 0, 255))
-                if (previous_x != bbox[0]) and (previous_y != bbox[1]): # direkt eşit mi? yoksa bir aralığa göre mi??
+                if (previous_x - 3 < bbox[0] < previous_x + 3) and (previous_y - 3 < bbox[1] < previous_y + 3): # direkt eşit mi? yoksa bir aralığa göre mi??
+                    is_first_frame = True
+                else:
                     previous_x = bbox[0]
                     previous_y = bbox[1]
-                else:
+
+                if bbox[0] + bbox[2]/2 < 0 or video.get(cv2.CV_CAP_PROP_FRAME_WIDTH) < (bbox[0] + bbox[2]/2) or bbox[1] + bbox[3]/2 < 0 \
+                                        or video.get(cv2.cv2.CV_CAP_PROP_FRAME_HEIGHT) < (bbox[1] + bbox[3]/2):
                     is_first_frame = True
+
 
         cv2.imshow("Tracking", frame)
 
