@@ -66,10 +66,9 @@ def main():
                     previous_x = bbox[0]
                     previous_y = bbox[1]
 
-                if bbox[0] + bbox[2]/2 < 0 or video.get(cv2.CV_CAP_PROP_FRAME_WIDTH) < (bbox[0] + bbox[2]/2) or bbox[1] + bbox[3]/2 < 0 \
-                                        or video.get(cv2.cv2.CV_CAP_PROP_FRAME_HEIGHT) < (bbox[1] + bbox[3]/2):
+                if bbox[0] + bbox[2]/2 < 0 or video.get(cv2.CAP_PROP_FRAME_WIDTH) < (bbox[0] + bbox[2]/2) or bbox[1] + bbox[3]/2 < 0 \
+                                        or video.get(cv2.CAP_PROP_FRAME_HEIGHT) < (bbox[1] + bbox[3]/2):
                     is_first_frame = True
-
 
         cv2.imshow("Tracking", frame)
 
