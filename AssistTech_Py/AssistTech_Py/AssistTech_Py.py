@@ -1,8 +1,6 @@
-from email.header import _Accumulator
-
 import cv2
 import sys
-import ctypes
+import pyautogui
 import numpy as np
 
 
@@ -65,9 +63,14 @@ def main():
                     # direkt eşit mi? yoksa bir 3?????!! aralığa göre mi??
                     is_first_frame = True
                 else:
+                    x, y = pyautogui.position()
+                    pyautogui.moveTo(x+10*(bbox[0]-previous_x),y+10*(bbox[1]-previous_y))
+                    # senstivity!!??!  pyautogui muazzam!
                     previous_x = bbox[0]
                     previous_y = bbox[1]
-            else: is_first_frame = True
+
+            else:
+                is_first_frame = True
             # if bbox[0] + bbox[2]/2 < 0 or video.get(cv2.CAP_PROP_FRAME_WIDTH) < (bbox[0] + bbox[2]/2) or bbox[1] + bbox[3]/2 < 0 \
                    #     or video.get(cv2.CAP_PROP_FRAME_HEIGHT) < (bbox[1] + bbox[3]/2):
                     # is_first_frame = True
