@@ -9,7 +9,6 @@ def main():
     element = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     mog2_bgs = cv2.createBackgroundSubtractorMOG2()
     cv2.ocl.setUseOpenCL(False)
-    tracker = cv2.Tracker_create("KCF")
     video = cv2.VideoCapture(0)
 
     if not video.isOpened():
@@ -24,6 +23,7 @@ def main():
     is_first_frame = True
     previous_x = 0
     previous_y = 0
+    bbox = 0
     while True:
         ok, frame = video.read()
         if not ok: break
@@ -31,7 +31,7 @@ def main():
 
         if is_first_frame:
             largest_area = 0
-            gaussian_blurred = cv2.GaussianBlur(frame, (5, 5), 0) # Kernel size değişebilir noise robust için
+            gaussian_blurred = cv2.GaussianBlur(frame, (7, 7), 0) # Kernel size değişebilir noise robust için
             foreground_mask = mog2_bgs.apply(gaussian_blurred)
             _, thresholded = cv2.threshold(foreground_mask, float(70.0), 255, cv2.THRESH_BINARY)
             gradient = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, element)  # sadece dilation a çevrilebilir
@@ -48,12 +48,15 @@ def main():
                         if x > 100 and y > 100 and \
                                 x + 100 < video.get(cv2.CAP_PROP_FRAME_WIDTH) and y + 100 < video.get(cv2.CAP_PROP_FRAME_HEIGHT):
                             # ekranın belli ???miktar içinde bulması gerek hareketin
-                            if w > 100 and h > 100:  # kare bulmamız ve belli bir uzunluktan??? fazla olması çözülmesi gerekiyor
+                            if w > 50 and h > 50:  # kare bulmamız ve belli bir uzunluktan??? fazla olması çözülmesi gerekiyor
                                 bbox = (x, y, w, w)
-                                _ = tracker.init(frame, bbox)
+                                previous_y = y
+                                previous_x = x
                                 largest_area = area
                                 is_first_frame = False
         else:
+            tracker = cv2.Tracker_create("KCF")
+            ok = tracker.init(frame, bbox)
             ok, bbox = tracker.update(frame)
 
             if ok:
@@ -61,7 +64,7 @@ def main():
                 p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
                 cv2.rectangle(frame, p1, p2, (0, 0, 255))
                 print("%s" % str(bbox))
-                if (previous_x - 3 < bbox[0] < previous_x + 3) and (previous_y - 3 < bbox[1] < previous_y + 3):
+                if (previous_x == bbox[0]) and (previous_y == bbox[1]):
                     # direkt eşit mi? yoksa bir 3?????!! aralığa göre mi??
                     is_first_frame = True
                 else:
