@@ -42,7 +42,7 @@ def main():
             for i, cnt in enumerate(contours):
                 area = cv2.contourArea(cnt)
                 tmp_size = np.size(frame)
-                if not ((500 < area < 1000) or area > tmp_size / 8):  # area aralığı???? çözülmesi gerekiyor
+                if not ((1000 < area < 2000) or area > tmp_size / 8):  # area aralığı???? çözülmesi gerekiyor
                     if largest_area < area:
                         x, y, w, h = cv2.boundingRect(cnt)
                         if x > 100 and y > 100 and \
@@ -66,7 +66,7 @@ def main():
                     is_first_frame = True
                 else:
                     x, y = pyautogui.position()
-                    pyautogui.moveTo(x+10*(bbox[0]+previous_x),y+10*(bbox[1]-previous_y))
+                    pyautogui.moveTo(x+10*(bbox[0]-previous_x),y+10*(bbox[1]-previous_y))
                     # senstivity!!??!  pyautogui muazzam!
                     previous_x = bbox[0]
                     previous_y = bbox[1]
@@ -76,7 +76,6 @@ def main():
             # if bbox[0] + bbox[2]/2 < 0 or video.get(cv2.CAP_PROP_FRAME_WIDTH) < (bbox[0] + bbox[2]/2) or bbox[1] + bbox[3]/2 < 0 \
                    #     or video.get(cv2.CAP_PROP_FRAME_HEIGHT) < (bbox[1] + bbox[3]/2):
                     # is_first_frame = True
-
 
         cv2.imshow("Tracking", frame)
 
