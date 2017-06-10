@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>55e0d0ef-9ddb-43ee-b2a7-e290a272155c</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>AssistTech_Py.py</StartupFile>
+    <StartupFile>murAssistTech_Py.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

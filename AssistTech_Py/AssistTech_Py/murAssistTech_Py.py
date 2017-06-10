@@ -25,6 +25,7 @@ def main():
     is_first_frame = True
     previous_x = 0
     previous_y = 0
+    bbox = 0 # python  <3
     while True:
         ok, frame = video.read()
         if not ok: break
@@ -50,10 +51,10 @@ def main():
                             previous_y = y
                             previous_x = x
                             largest_area = area
-                            ok = tracker.init(frame, bbox)
                             is_first_frame = False
         else:
             tracker = cv2.Tracker_create("KCF")
+            ok = tracker.init(frame, bbox)
             ok, bbox = tracker.update(frame)
 
             if ok:
@@ -62,6 +63,8 @@ def main():
                 cv2.rectangle(frame, p1, p2, (0, 0, 255))
                 if (previous_x - 3 < bbox[0] < previous_x + 3) and (previous_y - 3 < bbox[1] < previous_y + 3): # direkt e?it mi? yoksa bir aral??a g�re mi??
                     is_first_frame = True
+                    previous_x = 0
+                    previous_y = 0
                 else:
                     previous_x = bbox[0]
                     previous_y = bbox[1]
@@ -69,6 +72,8 @@ def main():
                 if bbox[0] + bbox[2]/2 < 0 or video.get(cv2.CAP_PROP_FRAME_WIDTH) < (bbox[0] + bbox[2]/2) or bbox[1] + bbox[3]/2 < 0 \
                                         or video.get(cv2.CAP_PROP_FRAME_HEIGHT) < (bbox[1] + bbox[3]/2):
                     is_first_frame = True
+                    previous_x = 0
+                    previous_y = 0
 
         cv2.imshow("Tracking", frame)
 
