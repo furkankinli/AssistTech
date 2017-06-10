@@ -10,6 +10,7 @@ def main():
     mog2_bgs = cv2.createBackgroundSubtractorMOG2()
     cv2.ocl.setUseOpenCL(False)
     video = cv2.VideoCapture(0)
+    tracker = cv2.Tracker_create("KCF")
 
     if not video.isOpened():
         print("Could not open video")
@@ -50,12 +51,9 @@ def main():
                             # ekranın belli ???miktar içinde bulması gerek hareketin
                             if w > 50 and h > 50:  # kare bulmamız ve belli bir uzunluktan??? fazla olması çözülmesi gerekiyor
                                 bbox = (x, y, w, w)
-                                previous_y = y
-                                previous_x = x
                                 largest_area = area
                                 is_first_frame = False
         else:
-            tracker = cv2.Tracker_create("KCF")
             ok = tracker.init(frame, bbox)
             ok, bbox = tracker.update(frame)
 
@@ -64,9 +62,10 @@ def main():
                 p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
                 cv2.rectangle(frame, p1, p2, (0, 0, 255))
                 print("%s" % str(bbox))
-                if (previous_x == bbox[0]) and (previous_y == bbox[1]):
+                if (previous_x - 5 < bbox[0] < previous_x + 5) and (previous_y - 5 < bbox[1] < previous_y + 5):
                     # direkt eşit mi? yoksa bir 3?????!! aralığa göre mi??
-                    is_first_frame = True
+                    # is_first_frame = True
+                    print("asddsa")
                 else:
                     x, y = pyautogui.position()
                     pyautogui.moveTo(x+10*(bbox[0]-previous_x),y+10*(bbox[1]-previous_y))
