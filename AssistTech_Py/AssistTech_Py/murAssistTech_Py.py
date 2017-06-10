@@ -75,6 +75,7 @@ def main():
                     previous_x = 0
                     previous_y = 0
 
+
         cv2.imshow("Tracking", frame)
 
         k = cv2.waitKey(1) & 0xff
