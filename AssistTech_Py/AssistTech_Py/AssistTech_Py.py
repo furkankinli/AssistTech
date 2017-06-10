@@ -5,6 +5,7 @@ import numpy as np
 
 
 def main():
+    pyautogui.FAILSAFE = False
     element = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     mog2_bgs = cv2.createBackgroundSubtractorMOG2()
     cv2.ocl.setUseOpenCL(False)
