@@ -9,7 +9,7 @@ def main():
     video = cv2.VideoCapture(0)
     tracker = cv2.Tracker_create("KCF")
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-    eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+    eye_cascade = cv2.CascadeClassifier('haarcascade_eye_tree_eyeglasses.xml')
 
     if not video.isOpened():
         print("Could not open video")
@@ -17,7 +17,8 @@ def main():
 
     previous_x = 0
     previous_y = 0
-    face_detector = False
+    previous_w = 0
+    face_detector = True
 
     while True:
         ok, frame = video.read()
@@ -30,12 +31,22 @@ def main():
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             faces = face_cascade.detectMultiScale(gray, 1.3, 5)
             for (x, y, w, h) in faces:
-                frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                roi_gray = gray[y:y + h, x:x + w]
-                roi_color = frame[y:y + h, x:x + w]
-                eyes = eye_cascade.detectMultiScale(roi_gray)
-                for (ex, ey, ew, eh) in eyes:
-                    cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
+                if not (previous_y - 3 < y < previous_y + 3 and previous_x - 3 < x < previous_x + 3):
+                    frame = cv2.rectangle(frame, (x, y), (x + w, y + w), (255, 0, 0), 2)
+                    roi_gray = gray[y:y + h, x:x + w]
+                    roi_color = frame[y:y + h, x:x + w]
+                    eyes = eye_cascade.detectMultiScale(roi_gray)
+                    for (ex, ey, ew, eh) in eyes:
+                        cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
+                    x_pos, y_pos = pyautogui.position()
+                    pyautogui.moveTo(x_pos + 8 * (x - previous_x), y_pos + 16 * (y - previous_y))
+                    previous_x = x
+                    previous_y = y
+                    previous_w = w
+                else:
+                    frame = cv2.rectangle(frame, (previous_x, previous_y), (previous_x + previous_w, previous_y + previous_w), (255, 0, 0), 2)
+
+
         else:
             bbox = (video.get(cv2.CAP_PROP_FRAME_WIDTH) / 2 - 100, video.get(cv2.CAP_PROP_FRAME_HEIGHT) / 2 - 100, 200, 200)
             ok = tracker.init(frame, bbox)
@@ -51,8 +62,8 @@ def main():
                                     bbox[1] + bbox[3] / 2 < 0 \
                                 or video.get(cv2.CAP_PROP_FRAME_HEIGHT) < (bbox[1] + bbox[3] / 2)):
                     if not (previous_y - 3 < bbox[1] < previous_y + 3 and previous_x - 3 < bbox[0] < previous_x + 3):
-                        x, y = pyautogui.position()
-                        pyautogui.moveTo(x + 8 * (bbox[0] - previous_x), y + 16 * (bbox[1] - previous_y))
+                        x_pos, y_pos = pyautogui.position()
+                        pyautogui.moveTo(x_pos + 8 * (bbox[0] - previous_x), y_pos + 16 * (bbox[1] - previous_y))
                         # else:
                         # pyautogui.click()
                         # pyautogui.doubleClick()
