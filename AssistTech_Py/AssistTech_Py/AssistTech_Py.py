@@ -1,87 +1,72 @@
 import cv2
 import sys
 import pyautogui
-import numpy as np
 
 
 def main():
     pyautogui.FAILSAFE = False
-    element = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-    mog2_bgs = cv2.createBackgroundSubtractorMOG2()
     cv2.ocl.setUseOpenCL(False)
     video = cv2.VideoCapture(0)
     tracker = cv2.Tracker_create("KCF")
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
     if not video.isOpened():
         print("Could not open video")
         sys.exit()
 
-    ok, frame = video.read()
-    if not ok:
-        print('Cannot read video file')
-        sys.exit()
-
-    is_first_frame = True
     previous_x = 0
     previous_y = 0
-    bbox = 0
+    face_detector = False
+
     while True:
         ok, frame = video.read()
-        if not ok: break
+        if not ok:
+            print('Cannot read video file')
+            sys.exit()
+
         frame = cv2.flip(frame, 1)
-
-        if is_first_frame:
-            largest_area = 0
-            gaussian_blurred = cv2.GaussianBlur(frame, (7, 7), 0) # Kernel size değişebilir noise robust için
-            foreground_mask = mog2_bgs.apply(gaussian_blurred)
-            _, thresholded = cv2.threshold(foreground_mask, float(70.0), 255, cv2.THRESH_BINARY)
-            gradient = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, element)  # sadece dilation a çevrilebilir
-            foreground = gradient
-
-            image, contours, hierarchy = cv2.findContours(foreground.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-            for i, cnt in enumerate(contours):
-                area = cv2.contourArea(cnt)
-                tmp_size = np.size(frame)
-                if not ((1000 < area < 2000) or area > tmp_size / 8):  # area aralığı???? çözülmesi gerekiyor
-                    if largest_area < area:
-                        x, y, w, h = cv2.boundingRect(cnt)
-                        if x > 100 and y > 100 and \
-                                x + 100 < video.get(cv2.CAP_PROP_FRAME_WIDTH) and y + 100 < video.get(cv2.CAP_PROP_FRAME_HEIGHT):
-                            # ekranın belli ???miktar içinde bulması gerek hareketin
-                            if w > 50 and h > 50:  # kare bulmamız ve belli bir uzunluktan??? fazla olması çözülmesi gerekiyor
-                                bbox = (x, y, w, w)
-                                largest_area = area
-                                is_first_frame = False
+        if face_detector:
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+            for (x, y, w, h) in faces:
+                frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                roi_gray = gray[y:y + h, x:x + w]
+                roi_color = frame[y:y + h, x:x + w]
+                eyes = eye_cascade.detectMultiScale(roi_gray)
+                for (ex, ey, ew, eh) in eyes:
+                    cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
         else:
+            bbox = (video.get(cv2.CAP_PROP_FRAME_WIDTH) / 2 - 100, video.get(cv2.CAP_PROP_FRAME_HEIGHT) / 2 - 100, 200, 200)
             ok = tracker.init(frame, bbox)
+
             ok, bbox = tracker.update(frame)
 
             if ok:
                 p1 = (int(bbox[0]), int(bbox[1]))
                 p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
-                cv2.rectangle(frame, p1, p2, (0, 0, 255))
+                cv2.rectangle(frame, p1, p2, (0, 0, 255), 2)
                 print("%s" % str(bbox))
-                if (previous_x - 5 < bbox[0] < previous_x + 5) and (previous_y - 5 < bbox[1] < previous_y + 5):
-                    # direkt eşit mi? yoksa bir 3?????!! aralığa göre mi??
-                    is_first_frame = True
-                else:
-                    x, y = pyautogui.position()
-                    pyautogui.moveTo(x+5*(bbox[0]-previous_x),y+5*(bbox[1]-previous_y))
-                    # senstivity!!??!  pyautogui muazzam!
+                if not (bbox[0] + bbox[2] / 2 < 0 or video.get(cv2.CAP_PROP_FRAME_WIDTH) < (bbox[0] + bbox[2] / 2) or
+                                    bbox[1] + bbox[3] / 2 < 0 \
+                                or video.get(cv2.CAP_PROP_FRAME_HEIGHT) < (bbox[1] + bbox[3] / 2)):
+                    if not (previous_y - 3 < bbox[1] < previous_y + 3 and previous_x - 3 < bbox[0] < previous_x + 3):
+                        x, y = pyautogui.position()
+                        pyautogui.moveTo(x + 8 * (bbox[0] - previous_x), y + 16 * (bbox[1] - previous_y))
+                        # else:
+                        # pyautogui.click()
+                        # pyautogui.doubleClick()
+                        # pyautogui.rightClick()
+                        # pyautogui.scroll(-10)
+
                     previous_x = bbox[0]
                     previous_y = bbox[1]
 
-            else:
-                is_first_frame = True
-            # if bbox[0] + bbox[2]/2 < 0 or video.get(cv2.CAP_PROP_FRAME_WIDTH) < (bbox[0] + bbox[2]/2) or bbox[1] + bbox[3]/2 < 0 \
-                   #     or video.get(cv2.CAP_PROP_FRAME_HEIGHT) < (bbox[1] + bbox[3]/2):
-                    # is_first_frame = True
-
-        cv2.imshow("Tracking", frame)
+        cv2.imshow('img', frame)
 
         k = cv2.waitKey(1) & 0xff
         if k == 27:
+            cv2.destroyAllWindows()
             break
 
 

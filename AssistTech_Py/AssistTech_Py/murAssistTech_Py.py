@@ -1,5 +1,5 @@
 import cv2
-import sys 
+import sys
 import ctypes
 import numpy as np
 
@@ -43,7 +43,7 @@ def main():
             for i, cnt in enumerate(contours):
                 area = cv2.contourArea(cnt)
                 tmp_size = np.size(frame)
-                if not ((1000 < area < 3000) or area > tmp_size / 8): # area aral??? ��z�lmesi gerekiyor
+                if not ((500 < area < 3000) or area > tmp_size / 8): # area aral??? ��z�lmesi gerekiyor
                     if largest_area < area:
                         x, y, w, h = cv2.boundingRect(cnt)
                         if w > 100 and h > 100: # kare bulmam?z ve belli bir uzunluktan fazla olmas? ��z�lmesi gerekiyor
@@ -74,7 +74,6 @@ def main():
                     is_first_frame = True
                     previous_x = 0
                     previous_y = 0
-
 
         cv2.imshow("Tracking", frame)
 
