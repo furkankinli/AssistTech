@@ -65,7 +65,7 @@ def main():
                     is_first_frame = True
                 else:
                     x, y = pyautogui.position()
-                    pyautogui.moveTo(x+10*(bbox[0]-previous_x),y+10*(bbox[1]-previous_y))
+                    pyautogui.moveTo(x+10*(bbox[0]+previous_x),y+10*(bbox[1]-previous_y))
                     # senstivity!!??!  pyautogui muazzam!
                     previous_x = bbox[0]
                     previous_y = bbox[1]
