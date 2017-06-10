@@ -5,6 +5,7 @@ import numpy as np
 
 
 def main():
+    pyautogui.FAILSAFE = False
     element = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     mog2_bgs = cv2.createBackgroundSubtractorMOG2()
     cv2.ocl.setUseOpenCL(False)
@@ -65,7 +66,7 @@ def main():
                     is_first_frame = True
                 else:
                     x, y = pyautogui.position()
-                    pyautogui.moveTo(x+10*(bbox[0]-previous_x),y+10*(bbox[1]-previous_y))
+                    pyautogui.moveTo(x+10*(bbox[0]+previous_x),y+10*(bbox[1]-previous_y))
                     # senstivity!!??!  pyautogui muazzam!
                     previous_x = bbox[0]
                     previous_y = bbox[1]
