@@ -21,6 +21,33 @@ def detect_face(frame):
     return bbox
 
 
+def is_on_screen(bbox, video):
+    if bbox[0] < 0:
+        return False
+    elif video.get(cv2.CAP_PROP_FRAME_WIDTH) < (bbox[0] + bbox[2]):
+        return False
+    elif bbox[1] < 0:
+        return False
+    elif video.get(cv2.CAP_PROP_FRAME_HEIGHT) < (bbox[1] + bbox[3]):
+        return False
+    return True
+
+
+def stay(prev_bbox,video):
+    width = video.get(cv2.CAP_PROP_FRAME_WIDTH)
+    height = video.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    # workspace settings  = 10 ??
+    if prev_bbox[0] < 0:
+        return (10, prev_bbox[1],prev_bbox[2],prev_bbox[3])
+    elif width < (prev_bbox[0] + prev_bbox[2]):
+        return (width - prev_bbox[2] - 10, prev_bbox[1], prev_bbox[2], prev_bbox[3])
+    elif prev_bbox[1] < 0:
+        return (prev_bbox[0], 10, prev_bbox[2], prev_bbox[3])
+    elif height < (prev_bbox[1] + prev_bbox[3]):
+        return (prev_bbox[0], height - prev_bbox[3] - 10, prev_bbox[2], prev_bbox[3])
+    return prev_bbox
+
+
 def main():
     tracker = cv2.Tracker_create("KCF")
     c = input("Face detection (1) vs. Foreground information (2) vs. Simple Blob Detection (3):")
@@ -29,8 +56,8 @@ def main():
     mog2_bgs = cv2.createBackgroundSubtractorMOG2()
     params = cv2.SimpleBlobDetector_Params()
 
-    params.minThreshold = 10
-    params.maxThreshold = 200
+    params.minThreshold = 100
+    params.maxThreshold = 2000
     params.filterByArea = True
     params.minArea = 500
     params.filterByCircularity = True
@@ -42,7 +69,8 @@ def main():
     detector = cv2.SimpleBlobDetector_create(params)
 
     first_frame = True
-    bbox = (0,0,0,0)
+    bbox = (0, 0, 0, 0)
+    prev_blob = 0
 
     if not video.isOpened():
         print("Could not open video")
@@ -50,7 +78,7 @@ def main():
 
     while 1:
         read, frame = video.read()
-        frame = cv2.resize(frame,(320, 320))
+        #frame = cv2.resize(frame, (320, 320))
         if not read:
             print("Cannot read video file")
             sys.exit()
@@ -75,7 +103,7 @@ def main():
                 for i, cnt in enumerate(contours):
                     area = cv2.contourArea(cnt)
                     tmp_size = np.size(frame)
-                    if 1000 < area < tmp_size/8:  # area aralığı???? çözülmesi gerekiyor
+                    if 1000 < area < tmp_size / 8:  # area aralığı???? çözülmesi gerekiyor
                         if largest_area < area:
                             x, y, w, h = cv2.boundingRect(cnt)
                             if 150 > w > 50 and 150 > h > 50:
@@ -84,23 +112,36 @@ def main():
                                 largest_area = area
                                 first_frame = False
             elif c == "3":
+                largest_diameter = 0
                 keypoints = detector.detect(frame)
-                if len(keypoints) > 0:
-                    bbox = (int(keypoints[0].pt[0]),int(keypoints[0].pt[1]),int(keypoints[0].size),int(keypoints[0].size))
-                    print(bbox)
-                    first_frame = False
-                else: print("%s" % str(keypoints))
+                for i, _ in enumerate(keypoints):
+                    if largest_diameter < int(keypoints[i].size):
+                        largest_diameter = keypoints[i].size
+                        bbox = (int(keypoints[i].pt[0]), int(keypoints[i].pt[1]), int(keypoints[i].size),
+                                int(keypoints[i].size))
+                if largest_diameter != 0: first_frame = False
 
             else:
                 print("Wrong input!")
         else:
             ok = tracker.init(frame, bbox)
-            ok, bbox = tracker.update(frame)
 
-            if ok:
-                p1 = (int(bbox[0]), int(bbox[1]))
-                p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
+            if prev_blob == 0:
+                ok, bbox = tracker.update(frame)
+                prev_blob = bbox
+            elif is_on_screen(prev_blob, video):
+                ok, bbox = tracker.update(frame)
+                prev_blob = bbox
+                if ok:
+                    p1 = (int(bbox[0]), int(bbox[1]))
+                    p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
+                    cv2.rectangle(frame, p1, p2, (0, 0, 255), 2)
+            else:
+                prev_blob = stay(prev_blob, video)
+                p1 = (int(prev_blob[0]), int(prev_blob[1]))
+                p2 = (int(prev_blob[0] + prev_blob[2]), int(prev_blob[1] + prev_blob[3]))
                 cv2.rectangle(frame, p1, p2, (0, 0, 255), 2)
+                ok = tracker.init(frame, prev_blob)
 
         cv2.imshow('AssistTech', frame)
 
