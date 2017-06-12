@@ -34,6 +34,16 @@ def is_on_screen(bbox, video):
     return True
 
 
+def draw_rectangle(bbox, frame):
+    p1 = (int(bbox[0]), int(bbox[1]))
+    p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
+    cv2.rectangle(frame, p1, p2, (0, 0, 255), 2)
+
+
+def move(bbox, prev_blob, x_pos, y_pos):
+    pyautogui.moveTo(x_pos + 16 * (bbox[0] - prev_blob[0]), y_pos + 16 * (bbox[1] - prev_blob[1]))
+
+
 def stay_on_screen(prev_bbox, video):
     width = video.get(cv2.CAP_PROP_FRAME_WIDTH)
     height = video.get(cv2.CAP_PROP_FRAME_HEIGHT)
@@ -84,7 +94,7 @@ def main():
     first_frame = True
     bbox = (0, 0, 0, 0)
     prev_blob = 0
-    framecounter = 0
+    frame_counter = 0
     starting_point = 0
 
     if not video.isOpened():
@@ -149,18 +159,14 @@ def main():
                 ok, bbox = tracker.update(frame)
 
                 if ok:
-                    p1 = (int(bbox[0]), int(bbox[1]))
-                    p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
-                    cv2.rectangle(frame, p1, p2, (0, 0, 255), 2)
-                    pyautogui.moveTo(x_pos + 16 * (bbox[0] - prev_blob[0]), y_pos + 16 * (bbox[1] - prev_blob[1]))
+                    draw_rectangle(bbox, frame)
+                    move(bbox, prev_blob, x_pos, y_pos)
                 prev_blob = bbox
             else:
                 prev_blob = stay_on_screen(prev_blob, video)
-                p1 = (int(prev_blob[0]), int(prev_blob[1]))
-                p2 = (int(prev_blob[0] + prev_blob[2]), int(prev_blob[1] + prev_blob[3]))
-                cv2.rectangle(frame, p1, p2, (0, 0, 255), 2)
+                draw_rectangle(prev_blob, frame)
                 ok = tracker.init(frame, prev_blob)
-                pyautogui.moveTo(x_pos + 16 * (bbox[0] - prev_blob[0]), y_pos + 16 * (bbox[1] - prev_blob[1]))
+                move(bbox, prev_blob, x_pos, y_pos)
 
         cv2.imshow('DesTek', frame)
 
