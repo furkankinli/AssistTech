@@ -48,6 +48,18 @@ def stay_on_screen(prev_bbox, video):
         return (prev_bbox[0], height - prev_bbox[3] - 10, prev_bbox[2], prev_bbox[3])
     return prev_bbox
 
+bl = []
+def a(blob):
+    i = 1
+    if len(bl) < 4:
+        bl.append(blob)
+    elif blob != bl[-1]:
+        i = dis(bl[-4], blob) / (4 * conf)
+        bl = bl[-3:]
+        bl.append(blob)
+    else:
+        bl = []
+    return i
 
 def main():
     tracker = cv2.Tracker_create("KCF")
