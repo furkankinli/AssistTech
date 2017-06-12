@@ -18,7 +18,6 @@ def detect_face(frame):
         eyes = eye_cascade.detectMultiScale(roi_gray)
         for (ex, ey, ew, eh) in eyes:
             cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
-
     return bbox
 
 
@@ -40,26 +39,25 @@ def draw_rectangle(bbox, frame):
     cv2.rectangle(frame, p1, p2, (0, 0, 255), 2)
 
 
-def move(bbox, prev_blob, x_pos, y_pos):
-    pyautogui.moveTo(x_pos + 16 * (bbox[0] - prev_blob[0]), y_pos + 16 * (bbox[1] - prev_blob[1]))
+def get_sensitivity(video):
+    print(video) ###!!!! !
 
 
-def stay_on_screen(prev_bbox, video):
-    width = video.get(cv2.CAP_PROP_FRAME_WIDTH)
-    height = video.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    # workspace settings  = 10 ??
-    if prev_bbox[0] < 0:
-        return (10, prev_bbox[1],prev_bbox[2],prev_bbox[3])
-    elif width < (prev_bbox[0] + prev_bbox[2]):
-        return (width - prev_bbox[2] - 10, prev_bbox[1], prev_bbox[2], prev_bbox[3])
-    elif prev_bbox[1] < 0:
-        return (prev_bbox[0], 10, prev_bbox[2], prev_bbox[3])
-    elif height < (prev_bbox[1] + prev_bbox[3]):
-        return (prev_bbox[0], height - prev_bbox[3] - 10, prev_bbox[2], prev_bbox[3])
-    return prev_bbox
+def dis(b1, b2):
+    print(b1)
+    print(b2)
+    a = (int(b1[0]))
+    b = (int(b2[0]))
+    c = (int(b1[1]))
+    d = (int(b2[1]))
+    return np.sqrt((a-b)**2 + (c-d)**2)
+
 
 bl = []
-def a(blob):
+
+
+def get_acceleration(blob, conf = 5):
+    global bl
     i = 1
     if len(bl) < 4:
         bl.append(blob)
@@ -70,6 +68,26 @@ def a(blob):
     else:
         bl = []
     return i
+
+
+def move(bbox, prev_blob, x_pos, y_pos):
+    pyautogui.moveTo(x_pos + 16 * get_acceleration(bbox) * (bbox[0] - prev_blob[0]), y_pos + 16 * get_acceleration(bbox) * (bbox[1] - prev_blob[1]))
+
+
+def stay_on_screen(prev_bbox, video):
+    width = video.get(cv2.CAP_PROP_FRAME_WIDTH)
+    height = video.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    # workspace settings  = 10 ??
+    if prev_bbox[0] < 0:
+        return (10, prev_bbox[1], prev_bbox[2], prev_bbox[3])
+    elif width < (prev_bbox[0] + prev_bbox[2]):
+        return (width - prev_bbox[2] - 10, prev_bbox[1], prev_bbox[2], prev_bbox[3])
+    elif prev_bbox[1] < 0:
+        return (prev_bbox[0], 10, prev_bbox[2], prev_bbox[3])
+    elif height < (prev_bbox[1] + prev_bbox[3]):
+        return (prev_bbox[0], height - prev_bbox[3] - 10, prev_bbox[2], prev_bbox[3])
+    return prev_bbox
+
 
 def main():
     tracker = cv2.Tracker_create("KCF")
