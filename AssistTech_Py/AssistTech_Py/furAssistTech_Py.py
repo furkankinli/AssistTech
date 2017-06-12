@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import sys
+import pyautogui
 
 
 def detect_face(frame):
@@ -33,7 +34,7 @@ def is_on_screen(bbox, video):
     return True
 
 
-def stay(prev_bbox,video):
+def stay_on_screen(prev_bbox, video):
     width = video.get(cv2.CAP_PROP_FRAME_WIDTH)
     height = video.get(cv2.CAP_PROP_FRAME_HEIGHT)
     # workspace settings  = 10 ??
@@ -71,6 +72,8 @@ def main():
     first_frame = True
     bbox = (0, 0, 0, 0)
     prev_blob = 0
+    framecounter = 0
+    starting_point = 0
 
     if not video.isOpened():
         print("Could not open video")
@@ -78,7 +81,8 @@ def main():
 
     while 1:
         read, frame = video.read()
-        #frame = cv2.resize(frame, (320, 320))
+        # frame = cv2.resize(frame, (320, 320))
+        x_pos, y_pos = pyautogui.position()
         if not read:
             print("Cannot read video file")
             sys.exit()
@@ -131,19 +135,22 @@ def main():
                 prev_blob = bbox
             elif is_on_screen(prev_blob, video):
                 ok, bbox = tracker.update(frame)
-                prev_blob = bbox
+
                 if ok:
                     p1 = (int(bbox[0]), int(bbox[1]))
                     p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
                     cv2.rectangle(frame, p1, p2, (0, 0, 255), 2)
+                    pyautogui.moveTo(x_pos + 16 * (bbox[0] - prev_blob[0]), y_pos + 16 * (bbox[1] - prev_blob[1]))
+                prev_blob = bbox
             else:
-                prev_blob = stay(prev_blob, video)
+                prev_blob = stay_on_screen(prev_blob, video)
                 p1 = (int(prev_blob[0]), int(prev_blob[1]))
                 p2 = (int(prev_blob[0] + prev_blob[2]), int(prev_blob[1] + prev_blob[3]))
                 cv2.rectangle(frame, p1, p2, (0, 0, 255), 2)
                 ok = tracker.init(frame, prev_blob)
+                pyautogui.moveTo(x_pos + 16 * (bbox[0] - prev_blob[0]), y_pos + 16 * (bbox[1] - prev_blob[1]))
 
-        cv2.imshow('AssistTech', frame)
+        cv2.imshow('DesTek', frame)
 
         k = cv2.waitKey(1) & 0xff
         if k == 27:
