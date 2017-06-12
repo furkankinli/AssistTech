@@ -27,6 +27,29 @@ def main():
     video = cv2.VideoCapture(0)
     element = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     mog2_bgs = cv2.createBackgroundSubtractorMOG2()
+    # Setup SimpleBlobDetector parameters.
+    params = cv2.SimpleBlobDetector_Params()
+
+    # Change thresholds
+    params.minThreshold = 10
+    params.maxThreshold = 200
+
+    # Filter by Area.
+    params.filterByArea = True
+    params.minArea = 500
+
+    # Filter by Circularity
+    params.filterByCircularity = True
+    params.minCircularity = 0.1
+
+    # Filter by Convexity
+    params.filterByConvexity = False
+    params.minConvexity = 0.87
+
+    # Filter by Inertia
+    params.filterByInertia = False
+    params.minInertiaRatio = 0.01
+    detector = cv2.SimpleBlobDetector_create(params)
     first_frame = True
     bbox = (0,0,0,0)
 
@@ -69,6 +92,12 @@ def main():
                                 bbox = (x, y, w, w)
                                 largest_area = area
                                 first_frame = False
+            elif c == "3":
+
+                keypoints = detector.detect(frame)
+                im_with_keypoints = cv2.drawKeypoints(frame, keypoints, np.array([]), (0, 0, 255),
+                                                      cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+                cv2.imshow('AssistTech', im_with_keypoints)
             else:
                 print("Wrong input!")
         else:
@@ -80,7 +109,7 @@ def main():
                 p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
                 cv2.rectangle(frame, p1, p2, (0, 0, 255), 2)
 
-        cv2.imshow('AssistTech', frame)
+        #cv2.imshow('AssistTech', frame)
 
         k = cv2.waitKey(1) & 0xff
         if k == 27:

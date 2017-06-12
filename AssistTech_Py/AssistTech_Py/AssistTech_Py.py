@@ -9,7 +9,7 @@ def main():
     video = cv2.VideoCapture(0)
     tracker = cv2.Tracker_create("KCF")
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-    eye_cascade = cv2.CascadeClassifier('haarcascade_eye_tree_eyeglasses.xml')
+    eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
     if not video.isOpened():
         print("Could not open video")
