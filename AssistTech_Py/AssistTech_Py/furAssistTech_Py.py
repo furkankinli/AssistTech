@@ -74,13 +74,14 @@ is_clicked = False
 counter = 0
 
 
-def click(fps, bbox, prev, conf=7):
+def click(prev, bbox, conf=3):
     global is_clicked
     global counter
-    num_of_frame = conf * fps
-    if dis(prev, bbox) > 3:
+    num_of_frame = conf * 5
+    print("Number of frames: %s" % num_of_frame)
+    if dis(prev, bbox) > 3: # ????????????????????
         if counter > num_of_frame and not is_clicked:
-            # need flags for double click, right click, scrolling, drag drop
+                # need flags for double click, right click, scrolling, drag drop
             pyautogui.click()
             counter = 0
             print("Tıkladım.")
@@ -145,12 +146,11 @@ def main():
     global counter
 
     while 1:
-        print(is_clicked)
-        print(counter)
+        print("Counter: %s" % counter)
         read, frame = video.read()
         # frame = cv2.resize(frame, (320, 320))
         x_pos, y_pos = pyautogui.position()
-        fps = video.get(cv2.CAP_PROP_FPS)
+        fps = 30 # video.get(cv2.CAP_PROP_FPS)
         if not read:
             print("Cannot read video file")
             sys.exit()
@@ -214,14 +214,14 @@ def main():
                 if ok:
                     draw_rectangle(bbox, frame)
                     move(bbox, prev_blob, x_pos, y_pos, video)
-                    click(fps,bbox,prev_blob)
+                    click(prev_blob, bbox)
                 prev_blob = bbox
             else:
                 prev_blob = stay_on_screen(prev_blob, video)
                 draw_rectangle(prev_blob, frame)
                 ok = tracker.init(frame, prev_blob)
                 move(bbox, prev_blob, x_pos, y_pos, video)
-                click(fps, bbox, prev_blob)
+                click(prev_blob, bbox)
 
         cv2.imshow('DesTek', frame)
 
