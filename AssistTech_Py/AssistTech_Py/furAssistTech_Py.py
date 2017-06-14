@@ -39,7 +39,7 @@ def draw_rectangle(bbox, frame):
     cv2.rectangle(frame, p1, p2, (0, 0, 255), 2)
 
 
-def get_sensitivity(video):
+def get_sensitivity(video, conf):
     print(video) ###!!!! !
 
 
@@ -70,8 +70,32 @@ def get_acceleration(blob, conf = 5):
     return i
 
 
-def move(bbox, prev_blob, x_pos, y_pos):
-    pyautogui.moveTo(x_pos + 16 * get_acceleration(bbox) * (bbox[0] - prev_blob[0]), y_pos + 16 * get_acceleration(bbox) * (bbox[1] - prev_blob[1]))
+is_clicked = False
+counter = 0
+
+
+def click(fps, bbox, prev, conf=7):
+    global is_clicked
+    global counter
+    num_of_frame = conf * fps
+    if dis(prev, bbox) > 3:
+        if counter > num_of_frame and not is_clicked:
+            # need flags for double click, right click, scrolling, drag drop
+            pyautogui.click()
+            counter = 0
+            print("Tıkladım.")
+            is_clicked = True
+        if counter == 0:
+            is_clicked = False
+
+
+def move(bbox, prev_blob, x_pos, y_pos, video):
+    w_screen = pyautogui.size()[0]
+    h_screen = pyautogui.size()[1]
+    w_cam = float(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+    h_cam = float(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    pyautogui.moveTo(x_pos + 16 * get_acceleration(bbox) * (bbox[0] - prev_blob[0]) * (w_cam/w_screen),
+                     y_pos + 24 * get_acceleration(bbox) * (bbox[1] - prev_blob[1]) * (h_cam/h_screen))
 
 
 def stay_on_screen(prev_bbox, video):
@@ -90,6 +114,7 @@ def stay_on_screen(prev_bbox, video):
 
 
 def main():
+    pyautogui.FAILSAFE = False
     tracker = cv2.Tracker_create("KCF")
     c = input("Face detection (1) vs. Foreground information (2) vs. Simple Blob Detection (3):")
     video = cv2.VideoCapture(0)
@@ -100,8 +125,8 @@ def main():
     params.minThreshold = 100
     params.maxThreshold = 2000
     params.filterByArea = True
-    params.minArea = 500
-    params.filterByCircularity = True
+    params.minArea = 2000
+    params.filterByCircularity = False
     params.minCircularity = 0.1
     params.filterByConvexity = False
     params.minConvexity = 0.87
@@ -112,17 +137,20 @@ def main():
     first_frame = True
     bbox = (0, 0, 0, 0)
     prev_blob = 0
-    frame_counter = 0
-    starting_point = 0
 
     if not video.isOpened():
         print("Could not open video")
         sys.exit()
 
+    global counter
+
     while 1:
+        print(is_clicked)
+        print(counter)
         read, frame = video.read()
         # frame = cv2.resize(frame, (320, 320))
         x_pos, y_pos = pyautogui.position()
+        fps = video.get(cv2.CAP_PROP_FPS)
         if not read:
             print("Cannot read video file")
             sys.exit()
@@ -163,7 +191,7 @@ def main():
                         largest_diameter = keypoints[i].size
                         bbox = (int(keypoints[i].pt[0]), int(keypoints[i].pt[1]), int(keypoints[i].size),
                                 int(keypoints[i].size))
-                if largest_diameter != 0: first_frame = False
+                if largest_diameter > 80: first_frame = False
 
             else:
                 print("Wrong input!")
@@ -175,16 +203,25 @@ def main():
                 prev_blob = bbox
             elif is_on_screen(prev_blob, video):
                 ok, bbox = tracker.update(frame)
-
+                if abs(bbox[0] - prev_blob[0]) < 4 and abs(bbox[1] - prev_blob[1]) < 4:
+                    bbox = prev_blob
+                    counter += 1
+                elif abs(bbox[0] - prev_blob[0]) < 4 or abs(bbox[1] - prev_blob[1]) < 4:
+                    if abs(bbox[0] - prev_blob[0]) < 4:
+                        bbox = (prev_blob[0], bbox[1], bbox[2], bbox[3])
+                    else:
+                        bbox = (bbox[0], prev_blob[1], bbox[2], bbox[3])
                 if ok:
                     draw_rectangle(bbox, frame)
-                    move(bbox, prev_blob, x_pos, y_pos)
+                    move(bbox, prev_blob, x_pos, y_pos, video)
+                    click(fps,bbox,prev_blob)
                 prev_blob = bbox
             else:
                 prev_blob = stay_on_screen(prev_blob, video)
                 draw_rectangle(prev_blob, frame)
                 ok = tracker.init(frame, prev_blob)
-                move(bbox, prev_blob, x_pos, y_pos)
+                move(bbox, prev_blob, x_pos, y_pos, video)
+                click(fps, bbox, prev_blob)
 
         cv2.imshow('DesTek', frame)
 
