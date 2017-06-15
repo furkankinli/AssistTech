@@ -9,11 +9,12 @@ def detect_face(frame):
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     gray = cv2.equalizeHist(gray)
+    gray = cv2.GaussianBlur(gray, (9, 9), 0)
     faces = face_cascade.detectMultiScale(gray, 1.4, 3)
     for (x, y, w, h) in faces:
         frame = cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
         bbox = (x, y, w, h)
-    return bbox
+    return bbox, face_cascade
 
 
 def is_on_screen(bbox, video):
@@ -34,16 +35,16 @@ def draw_rectangle(bbox, frame):
     cv2.rectangle(frame, p1, p2, (0, 0, 255), 2)
 
 
-def get_sensitivity(video, flag, conf=1):
+def get_sensitivity(video, flag, conf=0.4):
     w_screen = pyautogui.size()[0]
     h_screen = pyautogui.size()[1]
     w_cam = float(video.get(cv2.CAP_PROP_FRAME_WIDTH))
     h_cam = float(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
     if flag == "w":
-        return conf * (w_cam / w_screen)
+        return conf * (w_screen / w_cam)
     else:
-        return conf * (h_cam / h_screen)
+        return conf * (h_screen / h_cam)
 
 
 def dis(b1, b2):
@@ -85,7 +86,7 @@ def click(prev, bbox, conf=3):
     if dis(prev, bbox) > 3:  # ????????????????????
         if counter > num_of_frame and not is_clicked:
             # need flags for double click, right click, scrolling, drag drop
-            pyautogui.click()
+            # pyautogui.click()
             counter = 0
             print("Tıkladım.")
             is_clicked = True
@@ -126,7 +127,7 @@ def main():
     params.minThreshold = 100
     params.maxThreshold = 2000
     params.filterByArea = True
-    params.minArea = 3000
+    params.minArea = 500
     params.filterByCircularity = False
     params.minCircularity = 0.1
     params.filterByConvexity = False
@@ -148,7 +149,7 @@ def main():
     while 1:
         print("Counter: %s" % counter)
         read, frame = video.read()
-        # frame = cv2.resize(frame, (320, 320))
+
         x_pos, y_pos = pyautogui.position()
         fps = 30  # video.get(cv2.CAP_PROP_FPS)
         if not read:
@@ -158,8 +159,13 @@ def main():
 
         if first_frame:
             if c == "1":
-                bbox = detect_face(frame=frame)
-                first_frame = False
+                try:
+                   bbox, fc= detect_face(frame=frame)
+                   if not fc.empty():
+                       first_frame = False
+                except UnboundLocalError:
+                    pass
+
             elif c == "2":
                 largest_area = 0
 
@@ -183,7 +189,6 @@ def main():
                                 largest_area = area
                                 first_frame = False
             elif c == "3":
-                print(first_frame)
                 largest_diameter = 0
                 keypoints = detector.detect(frame)
                 for i, _ in enumerate(keypoints):
@@ -223,6 +228,7 @@ def main():
                 move(bbox, prev_blob, x_pos, y_pos, video)
                 click(prev_blob, bbox)
 
+        # frame = cv2.resize(frame, (320, 320))
         cv2.imshow('DesTek', frame)
 
         k = cv2.waitKey(1) & 0xff
