@@ -40,7 +40,7 @@ def draw_rectangle(bbox, frame):
 
 
 def get_sensitivity(video, conf):
-    print(video) ###!!!! !
+    print(video)  ###!!!! !
 
 
 def dis(b1, b2):
@@ -50,13 +50,13 @@ def dis(b1, b2):
     b = (int(b2[0]))
     c = (int(b1[1]))
     d = (int(b2[1]))
-    return np.sqrt((a-b)**2 + (c-d)**2)
+    return np.sqrt((a - b) ** 2 + (c - d) ** 2)
 
 
 bl = []
 
 
-def get_acceleration(blob, conf = 5):
+def get_acceleration(blob, conf=5):
     global bl
     i = 1
     if len(bl) < 4:
@@ -77,11 +77,11 @@ counter = 0
 def click(prev, bbox, conf=3):
     global is_clicked
     global counter
-    num_of_frame = conf * 5
+    num_of_frame = conf * 3
     print("Number of frames: %s" % num_of_frame)
-    if dis(prev, bbox) > 3: # ????????????????????
+    if dis(prev, bbox) > 3:  # ????????????????????
         if counter > num_of_frame and not is_clicked:
-                # need flags for double click, right click, scrolling, drag drop
+            # need flags for double click, right click, scrolling, drag drop
             pyautogui.click()
             counter = 0
             print("Tıkladım.")
@@ -95,8 +95,8 @@ def move(bbox, prev_blob, x_pos, y_pos, video):
     h_screen = pyautogui.size()[1]
     w_cam = float(video.get(cv2.CAP_PROP_FRAME_WIDTH))
     h_cam = float(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    pyautogui.moveTo(x_pos + 16 * get_acceleration(bbox) * (bbox[0] - prev_blob[0]) * (w_cam/w_screen),
-                     y_pos + 24 * get_acceleration(bbox) * (bbox[1] - prev_blob[1]) * (h_cam/h_screen))
+    pyautogui.moveTo(x_pos + 16 * get_acceleration(bbox) * (bbox[0] - prev_blob[0]) * (w_cam / w_screen),
+                      y_pos + 24 * get_acceleration(bbox) * (bbox[1] - prev_blob[1]) * (h_cam / h_screen))
 
 
 def stay_on_screen(prev_bbox, video):
@@ -116,6 +116,7 @@ def stay_on_screen(prev_bbox, video):
 
 def main():
     pyautogui.FAILSAFE = False
+    pyautogui.MINIMUM_DURATION = 0.5
     tracker = cv2.Tracker_create("KCF")
     c = input("Face detection (1) vs. Foreground information (2) vs. Simple Blob Detection (3):")
     video = cv2.VideoCapture(0)
@@ -126,7 +127,7 @@ def main():
     params.minThreshold = 100
     params.maxThreshold = 2000
     params.filterByArea = True
-    params.minArea = 2000
+    params.minArea = 3000
     params.filterByCircularity = False
     params.minCircularity = 0.1
     params.filterByConvexity = False
@@ -150,7 +151,7 @@ def main():
         read, frame = video.read()
         # frame = cv2.resize(frame, (320, 320))
         x_pos, y_pos = pyautogui.position()
-        fps = 30 # video.get(cv2.CAP_PROP_FPS)
+        fps = 30  # video.get(cv2.CAP_PROP_FPS)
         if not read:
             print("Cannot read video file")
             sys.exit()
@@ -178,12 +179,12 @@ def main():
                     if 1000 < area < tmp_size / 8:  # area aralığı???? çözülmesi gerekiyor
                         if largest_area < area:
                             x, y, w, h = cv2.boundingRect(cnt)
-                            if 150 > w > 50 and 150 > h > 50:
-                                print("4")
+                            if w > 280 and h > 280:
                                 bbox = (x, y, w, w)
                                 largest_area = area
                                 first_frame = False
             elif c == "3":
+                print(first_frame)
                 largest_diameter = 0
                 keypoints = detector.detect(frame)
                 for i, _ in enumerate(keypoints):
